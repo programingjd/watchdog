@@ -1,1 +1,1 @@
-# watchdog
+Service watchdog in bash.
