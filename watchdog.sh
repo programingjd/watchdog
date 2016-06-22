@@ -4,7 +4,7 @@
 SERVICE=${1:-"my_service"}
 echo $SERVICE
 
-WATCHDOG_FILE="~/watchdog-$SERVICE"
+WATCHDOG_FILE="${HOME}/watchdog-$SERVICE"
 touch $WATCHDOG_FILE
 
 (
