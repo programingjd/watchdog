@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 ### BEGIN INIT INFO
-# Provides:          watchdog_example
+# Provides:          watchdog-example
 # Required-Start:    $local_fs $syslog
 # Required-Stop:     $local_fs $syslog
 # Default-Start:     2 3 4 5
