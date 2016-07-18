@@ -1,24 +1,11 @@
-#!/usr/bin/env bash
-### BEGIN INIT INFO
-# Provides:          watchdog-example
-# Required-Start:    $local_fs $syslog
-# Required-Stop:     $local_fs $syslog
-# Default-Start:     2 3 4 5
-# Default-Stop:      0 1 6
-# Short-Description: Watchdog for the example service
-# Description:       Watchdog for the example service
-### END INIT INFO
-
 set -e
-
-NAME="watchdog-example"
 
 start() {
   if (($(ps -edf | grep /home/admin/repos/watchdog/watchdog.sh | grep example | wc -l) > 0))
   then
-    echo 'Service is already running' && false
+    echo 'Already running' && false
   else
-    echo 'Starting service...'
+    echo 'Starting...'
     sudo -H -u admin /home/admin/repos/watchdog/watchdog.sh example >/dev/null &
     echo 'Service started' >&2
   fi
@@ -27,11 +14,11 @@ start() {
 stop() {
   if (($(ps -edf | grep /home/admin/repos/watchdog/watchdog.sh | grep example | wc -l) > 0))
   then
-    echo 'Stopping service...'
+    echo 'Stopping...'
     ps -edf | grep /home/admin/repos/watchdog/watchdog.sh | grep example | awk '{print $2}' | xargs kill
-    echo 'Service stopped' >&2
+    echo 'Stopped' >&2
   else
-    echo 'Service not running' >&2
+    echo 'Not running' >&2
     return 1
   fi
 }
@@ -39,9 +26,9 @@ stop() {
 status() {
   if (($(ps -edf | grep /home/admin/repos/watchdog/watchdog.sh | grep example | wc -l) > 0))
   then
-    echo "Service is running" && true
+    echo "Running" && true
   else
-    echo "Service is not running" && false
+    echo "Not running" && false
   fi
 }
 

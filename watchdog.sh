@@ -1,16 +1,21 @@
 #!/usr/bin/env bash
 
-# defaults to my_service is none is specified
-SERVICE=${1:-"my_service"}
-echo ${SERVICE}
+SCRIPT=$1
+if [[ -x "$SCRIPT" ]]
+then
+    echo Script: '$SCRIPT' is not executable.
+    exit 1
+fi
 
-WATCHDOG_FILE="${HOME}/watchdog-${SERVICE}"
+FILENAME="${SCRIPT##*/}"
+
+WATCHDOG_FILE="${HOME}/watchdog-${FILENAME}"
 touch "${WATCHDOG_FILE}"
 
 (
   flock -x -w 3 200 || exit 1
   while true; do
-    "/etc/init.d/${SERVICE}" status  || "/etc/init.d/${SERVICE}" start
+    "${SCRIPT} status || "${SERVICE}" start
     sleep 3
   done
 ) 200>"${WATCHDOG_FILE}"
