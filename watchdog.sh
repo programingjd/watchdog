@@ -15,7 +15,7 @@ touch "${WATCHDOG_FILE}"
 (
   flock -x -w 3 200 || exit 1
   while true; do
-    "${SCRIPT} status || "${SERVICE}" start
+    "${SCRIPT}" status || "${SCRIPT}" start
     sleep 3
   done
 ) 200>"${WATCHDOG_FILE}"
