@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 
 SCRIPT=$1
-if [[ -x "$SCRIPT" ]]
+if [ ! -x "${SCRIPT}" ]
 then
-    echo Script: '$SCRIPT' is not executable.
+    echo Script: "${SCRIPT}" is not executable.
     exit 1
 fi
 
