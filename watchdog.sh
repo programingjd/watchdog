@@ -1,21 +1,48 @@
 #!/usr/bin/env bash
 
-SCRIPT=$1
-if [ ! -x "${SCRIPT}" ]
-then
-    echo Script: "${SCRIPT}" is not executable.
-    exit 1
+if [ $# -eq 0 ]; then
+  echo -e "Usage: ${0##*/} \e[32mcommand\e[0m"
+  echo    "Runs a command and automatically restarts it if it crashes or exits."
+  echo    "On SIGTKILL (kill -9), this script will stop, but the subprocess running the command is kept alive."
+  echo    "On SIGTERM or SIGINT (kill, kill -15, kill -2), this script will stop and it will also stop the subprocess running the command (by send SIGTERM to the subprocess)."
+  exit 1
 fi
 
-FILENAME="${SCRIPT##*/}"
-
-WATCHDOG_FILE="${HOME}/watchdog-${FILENAME}"
-touch "${WATCHDOG_FILE}"
+exec 200<$0
 
 (
-  flock -x -w 3 200 || exit 1
-  while true; do
-    "${SCRIPT}" status || "${SCRIPT}" start
-    sleep 3
-  done
-) 200>"${WATCHDOG_FILE}"
+  flock -n --exclusive 200 && (
+    setsid $0 $@ &
+  ) && sleep 1
+) && echo exit && exit
+
+PGID=$(cat /proc/$$/stat)
+PGID="${PGID##$$ * S $PPID }"
+PGID="${PGID%% * 0}"
+
+echo   "PID     PPID    PGID"
+printf "%-8s%-8s%-8s\n"  $$ $PPID $PGID
+
+COMMAND="$@"
+
+stopped="no"
+
+function trapped() {
+  stopped="yes"
+  trap - SIGINT
+  kill -9 -$PGID
+}
+
+trap trapped SIGTERM SIGINT
+
+while true; do
+  echo -n "[$(date +'%Y%m%d-%H:%M:%S')] "
+  echo "${COMMAND}"
+  eval "${COMMAND}"
+  echo "exited"
+  if [ stopped == "yes" ]; then
+   echo "stopped" 
+   break
+  fi
+  sleep 1
+done
