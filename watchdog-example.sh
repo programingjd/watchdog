@@ -38,11 +38,11 @@ findProcess
 
 function start() {
   if [[ -n  "${PID}" ]]; then
-    echo "\e[32m${NAME}\e[0m is already running" >&2
+    echo -e "\e[32m${NAME}\e[0m is already running" >&2
     false
   else
-    echo -n "Starting \e[32m${NAME}\e[0m..." >&2
-    (exec -a "Watchdog" ${WATCHDOG_COMMAND} > "${LOG}" 2>&1)&
+    echo -n -e "Starting \e[32m${NAME}\e[0m..." >&2
+    (${WATCHDOG_COMMAND} > "${LOG}" 2>&1)&
     echo "Done" >&2
     true
   fi
@@ -50,10 +50,10 @@ function start() {
 
 function stop() {
   if [[ -n "${PID}" ]]; then
-    echo -n "Stopping \e[32m${NAME}\e[0m..." >&2
+    echo -n -e "Stopping \e[32m${NAME}\e[0m..." >&2
     $(kill -9 ${PID} > /dev/null 2>&1) && (echo "Done" && true) || (echo "Failed" && false)
   else
-    echo "\e[32m${NAME}\e[0m is not running" >&2
+    echo -e "\e[32m${NAME}\e[0m is not running" >&2
     true
   fi
 }
@@ -64,10 +64,10 @@ function restart() {
 
 function status() {
   if [[ -n "${PID}" ]]; then
-    echo "Server is running" >&2
+    echo -e "\e[32m${NAME}\e[0m is running" >&2
     true
   else
-    echo "Server is not running" >&2
+    echo -e "\e[32m${NAME}\e[0m is not running" >&2
     false
   fi
 }
